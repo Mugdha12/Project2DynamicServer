@@ -209,7 +209,7 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
         let response = template;
         var energyType = req.params.selected_energy_type;
         var energyCounts = {};
-		var energyTypes = ["Coal", "Natural Gas", "Nuclear", "Petroleum", "Renewable"];
+		var energyTypes = ["coal", "natural_gas", "nuclear", "petroleum", "renewable"];
 		var index = energyTypes.indexOf(energyType);       
 	   db.all("SELECT * FROM Consumption",  (err,data) => {
             if(err)
@@ -219,12 +219,46 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
             else
             {
                 var i;
-                for (i=0; i<data.length;i++)
-                {
+               for (i=0; i<data.length;i++)
+			   {
                 //    energyCounts[i] = data[state_abbreviation]:{data[year] : data[energyType]};
                 }
-				response = response.replace ("Consumption Snapshot", energyTypes[index] + " Consumption Snapshot");
-				response=response.replace("noimage.jpg", energyType + ".jpg");
+				response = response.replace("Consumption Snapshot", energyType + " Consumption Snapshot");
+				var hold = "/energy-type/";
+                if(energyType === "renewable")
+                {
+                    response=response.replace("XXX", "Coal");
+					response=response.replace("NextLink", hold + "renewable" );
+                }
+                else
+                {
+                    response = response.replace("NextLink", hold + energyTypes[index+1]);
+                    response = response.replace("XXX", energyTypes[index+1]);
+                }
+                if(energyType === "coal")
+                {
+                    response=response.replace("XX", "Renewable" );
+                    response=response.replace("prevLink", hold + "renewable" );
+                }
+                else
+                {
+                    response=response.replace("PrevLink", hold + energyTypes[index-1]);
+                    response = response.replace("XX", energyTypes[index-1]);
+                }
+				
+				
+				
+				
+				if(energyType === "natural_gas")
+				{
+					response=response.replace("noimage.jpg", "NaturalGas.jpg");
+
+				}
+				else
+				{
+					response=response.replace("noimage.jpg", energyType + ".jpg");
+				}
+				
 				response=response.replace("description", "Image by Clker-Free-Vector-Images from Pixabay");
 				response=response.replace("description", "Image by Clker-Free-Vector-Images from Pixabay");
 				WriteHtml(res, response);
