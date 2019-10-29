@@ -6,7 +6,7 @@ var path = require('path')
 var express = require('express')
 var sqlite3 = require('sqlite3')
 
-
+// TEST
 var public_dir = path.join(__dirname, 'public');
 var template_dir = path.join(__dirname, 'templates');
 var db_filename = path.join(__dirname, 'db', 'usenergy.sqlite3');
