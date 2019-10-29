@@ -225,6 +225,8 @@ app.get('/state/:selected_state', (req, res) => {
                 response=response.replace("!!!petrol!!!", "[" + petroleum_counts.toString() + "]");
                 response=response.replace("!!!renew!!!", "[" + renewable_counts.toString() + "]");
                 response=response.replace("Data to be inserted here", table);
+				response=response.replace("noimage.jpg", state + ".jpg");
+				response=response.replace("description", "Image by Clker-Free-Vector-Images from Pixabay");
 				WriteHtml(res, response);
 
                 }    
