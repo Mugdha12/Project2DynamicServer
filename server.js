@@ -320,7 +320,7 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
 
                     if(energyType === "natural_gas")
                     {
-                    response=response.replace("noimage.jpg", "NaturalGas.jpg");
+                    response=response.replace("noimage.jpg", "Natural Gas.jpg");
 
                     }
                     else
