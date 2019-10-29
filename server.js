@@ -6,10 +6,11 @@ var path = require('path')
 var express = require('express')
 var sqlite3 = require('sqlite3')
 
-// TEST
+
 var public_dir = path.join(__dirname, 'public');
 var template_dir = path.join(__dirname, 'templates');
 var db_filename = path.join(__dirname, 'db', 'usenergy.sqlite3');
+var images_dir = path.join(__dirname, 'images');
 
 var app = express();
 var port = 8000;
@@ -26,7 +27,18 @@ var db = new sqlite3.Database(db_filename, sqlite3.OPEN_READONLY, (err) => {
 });
 
 function TestSql()
-
+{
+	db.all("SELECT year,renewable,state_abbreviation FROM Consumption WHERE state_abbreviation = ? ",["MN"],  (err,data) => {
+		if(err)
+		{
+			console.log("Error accessing the tables");
+		}
+		else
+		{
+			//console.log(data);
+		}
+	});
+}
 
 app.use(express.static(public_dir));
 
@@ -35,44 +47,8 @@ app.use(express.static(public_dir));
 app.get('/', (req, res) => {
     ReadFile(path.join(template_dir, 'index.html')).then((template) => {
         let response = template;
-        var coal_count=0;
-		var naturalGas_count=0;
-        var nuclear_count=0;
-        var petroleum_count=0;
-        var renewable_count=0; 
-        var table = "";
-        var total  = 0;
-
-        db.all("SELECT * FROM Consumption WHERE year = ? ",["2017"],  (err,data) => {
-            if(err)
-            {
-                console.log("Error accessing the tables");
-            }
-            else
-            {
-                for (i=0; i<data.length;i++)
-                {
-                    //console.log(data[i]["coal"]);
-                    coal_count = coal_count+Number(data[i]["coal"]);
-                    naturalGas_count=naturalGas_count+Number(data[i]["natural_gas"]);
-                    nuclear_count=nuclear_count+Number(data[i]["nuclear"]);
-                    petroleum_count=petroleum_count+Number(data[i]["petroleum"]);
-                    renewable_count=renewable_count+Number(data[i]["renewable"]);
-                    total  = coal_count + naturalGas_count + nuclear_count + petroleum_count + renewable_count;
-                    table = table + " <tr> <td>" +  data[i]["state_abbreviation"] + "</td> <td>"+ coal_count + "</td> <td> " + naturalGas_count + " </td> <td>" + nuclear_count + "</td> <td> " + petroleum_count + "</td> <td> " + renewable_count + "</td> <td> " + total + "</td> </tr>";
-
-                }
-                response=response.replace("!!!CoalCount!!!",coal_count);
-                response=response.replace("!!!Naturalcount!!!", naturalGas_count);
-                response=response.replace("!!!Nuclearcount!!!", nuclear_count);
-                response=response.replace("!!! PetroleumCount!!!", petroleum_count);
-                response=response.replace("!!!RenewableCount!!!", renewable_count);
-                response=response.replace("<!-- Data to be inserted here -->", table);
-                WriteHtml(res, response);
-            }
-           
-        });
-       
+        // modify `response` here
+        WriteHtml(res, response);
     }).catch((err) => {
         Write404Error(res);
     });
@@ -93,7 +69,7 @@ app.get('/year/:selected_year', (req, res) => {
 		db.all("SELECT * FROM Consumption WHERE year = ?", [year], (err,data) => {
 			if(err)
 			{
-				console.log("Error: no data for year " + year);
+				console.log("Error accessing the tables");
 			}
 			else
 			{
@@ -132,6 +108,7 @@ app.get('/year/:selected_year', (req, res) => {
                     response=response.replace("!!!prev!!!", hold + (Number(year)-1));
                     response = response.replace("National Snapshot", Number(year)-1);
                 }
+              //  console.log(response);
                 response=response.replace("!!!CoalCount!!!",coal_count);
                 response=response.replace("!!!Naturalcount!!!", naturalGas_count);
                 response=response.replace("!!!Nuclearcount!!!", nuclear_count);
@@ -166,13 +143,14 @@ app.get('/state/:selected_state', (req, res) => {
         db.all("SELECT * FROM Consumption WHERE state_abbreviation = ?", [state], (err,data) =>{
             if(err)
 			{
-				console.log("Error:no data for state " + state);
+				console.log("Error accessing the tables");
 			}
 			else
 			{
                 var i;
                 for (i=0; i<data.length;i++)
                 {
+                    //console.log(data[i]["coal"]);
                     coal_counts[i] = Number(data[i]["coal"]);
                     naturalGas_counts[i]=Number(data[i]["natural_gas"]);
                     nuclear_counts[i]=Number(data[i]["nuclear"]);
@@ -204,13 +182,16 @@ app.get('/state/:selected_state', (req, res) => {
                     response=response.replace("prevLink", hold + states[index-1]);
                     response = response.replace("XX", fStates[index-1]);
                 }
-                response=response.replace("!!!state!!!", fStates[index]);
+                //console.log("arr to str", "[" + coal_counts.toString() + "]");
+                response=response.replace("!!!state!!!", state);
                 response=response.replace("!!!coal!!!","[" + coal_counts.toString() + "]");
                 response=response.replace("!!!gas!!!", "[" + naturalGas_counts.toString() + "]");
                 response=response.replace("!!!nuclear!!!","[" + nuclear_counts.toString() + "]");
                 response=response.replace("!!!petrol!!!", "[" + petroleum_counts.toString() + "]");
                 response=response.replace("!!!renew!!!", "[" + renewable_counts.toString() + "]");
                 response=response.replace("Data to be inserted here", table);
+				response=response.replace("noimage.jpg", state + ".jpg");
+				response=response.replace("description", "Image by Clker-Free-Vector-Images from Pixabay");
 				WriteHtml(res, response);
 
             }
@@ -227,44 +208,60 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
     ReadFile(path.join(template_dir, 'energy.html')).then((template) => {
         let response = template;
         var energyType = req.params.selected_energy_type;
-        var energyCounts = {"AK": [], "AL": [], "AR":[], "AZ":[],"CA":[], "CO":[], "CT":[], "DC":[], "DE":[], "FL":[], "GA":[], "HI":[],"IA":[], "ID":[], "IL":[], "IN":[], "KS":[], "KY":[], "LA":[], "MA":[], "MD":[], "ME":[], "MI":[], "MN":[], "MO":[], "MS":[], "MT":[], "NC":[], "ND":[], "NE":[], "NH":[], "NJ":[], "NM":[], "NV":[], "NY":[], "OH":[], "OK":[], "OR":[], "PA":[], "RI":[], "SC":[], "SD":[], "TN":[], "TX":[], "UT":[], "VA":[], "VT":[], "WA":[],"WI":[], "WV":[], "WY":[]};
-        var year = [];
-        var table = "";
-        holdYear = 1960;
-        for (var x = 0; x <= 57; x++)
-        {
-            year[x]=holdYear;
-            holdYear++;
-        }
-        db.all("SELECT * FROM Consumption ORDER BY year",  (err,data) => {
+        var energyCounts = {};
+		var energyTypes = ["coal", "natural_gas", "nuclear", "petroleum", "renewable"];
+		var index = energyTypes.indexOf(energyType);       
+	   db.all("SELECT * FROM Consumption",  (err,data) => {
             if(err)
 			{
-				console.log("Error: no data for energy type" + energyType);
+				console.log("Error accessing the tables");
             }
             else
             {
-                
                 var i;
-                for (i=0; i<data.length;i++)
-                {
-                    var state = data[i]["state_abbreviation"];
-                    energyCounts[state].push(Number(data[i][energyType]));
+               for (i=0; i<data.length;i++)
+			   {
+                //    energyCounts[i] = data[state_abbreviation]:{data[year] : data[energyType]};
                 }
-                var j;
-                for (i=0; i<year.length; i++)
+				response = response.replace("Consumption Snapshot", energyType + " Consumption Snapshot");
+				var hold = "/energy-type/";
+                if(energyType === "renewable")
                 {
-                    table = table + "<tr> <td>" +  year[i] + "</td>";
-                    for (var key in energyCounts)
-                    {
-                        table = table +  "<td>" + energyCounts[key][i] + "</td> ";
-                    }
-                    table = table + "</tr>";
+                    response=response.replace("XXX", "Coal");
+					response=response.replace("NextLink", hold + "renewable" );
                 }
-                
-                response=response.replace ("<!-- Data to be inserted here -->", table);
-                response = response.replace("!!!type!!!", "\"" + energyType+"\"");
-                response = response.replace("!!! objects !!!",  JSON.stringify(energyCounts));
-                WriteHtml(res, response);
+                else
+                {
+                    response = response.replace("NextLink", hold + energyTypes[index+1]);
+                    response = response.replace("XXX", energyTypes[index+1]);
+                }
+                if(energyType === "coal")
+                {
+                    response=response.replace("XX", "Renewable" );
+                    response=response.replace("prevLink", hold + "renewable" );
+                }
+                else
+                {
+                    response=response.replace("PrevLink", hold + energyTypes[index-1]);
+                    response = response.replace("XX", energyTypes[index-1]);
+                }
+				
+				
+				
+				
+				if(energyType === "natural_gas")
+				{
+					response=response.replace("noimage.jpg", "NaturalGas.jpg");
+
+				}
+				else
+				{
+					response=response.replace("noimage.jpg", energyType + ".jpg");
+				}
+				
+				response=response.replace("description", "Image by Clker-Free-Vector-Images from Pixabay");
+				response=response.replace("description", "Image by Clker-Free-Vector-Images from Pixabay");
+				WriteHtml(res, response);
             }
         });
         
@@ -272,7 +269,7 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
         Write404Error(res);
     });
 });
-//tyy
+
 function ReadFile(filename) {
     return new Promise((resolve, reject) => {
         fs.readFile(filename, (err, data) => {
