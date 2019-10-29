@@ -60,7 +60,13 @@ app.get('/year/:selected_year', (req, res) => {
 			else
 			{
                 var i;
-                for (i=0; i<data.length;i++)
+                if(data.length == 0)
+                {
+                   Write404Error(res,"Error: no data for year " + year);
+                }
+                else
+                {
+                    for (i=0; i<data.length;i++)
                 {
                     //console.log(data[i]["coal"]);
                     coal_count = coal_count+Number(data[i]["coal"]);
@@ -102,6 +108,8 @@ app.get('/year/:selected_year', (req, res) => {
                 response=response.replace("!!!RenewableCount!!!", renewable_count);
                 response=response.replace("Data to be inserted", table);
 				WriteHtml(res, response);
+                }
+                
 			}
 		});
     }).catch((err) => {
@@ -133,6 +141,12 @@ app.get('/state/:selected_state', (req, res) => {
 			}
 			else
 			{
+                if(data.length == 0)
+                {
+                   Write404Error(res,"Error: no data for state " + state);
+                }
+                else
+                {
                 var i;
                 for (i=0; i<data.length;i++)
                 {
@@ -179,7 +193,7 @@ app.get('/state/:selected_state', (req, res) => {
 				response=response.replace("noimage.jpg", state + ".jpg");
 				response=response.replace("description", "Image by Clker-Free-Vector-Images from Pixabay");
 				WriteHtml(res, response);
-
+            }
             }
 
         });
@@ -204,6 +218,12 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
             }
             else
             {
+                if(data.length == 0)
+                {
+                   Write404Error(res,"Error: no data for energyType " + energyType);
+                }
+                else
+                {
                 var i;
                for (i=0; i<data.length;i++)
 			   {
@@ -249,6 +269,7 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
 				response=response.replace("description", "Image by Clker-Free-Vector-Images from Pixabay");
 				WriteHtml(res, response);
             }
+        }
         });
         
     }).catch((err) => {
@@ -269,9 +290,17 @@ function ReadFile(filename) {
     });
 }
 
-function Write404Error(res) {
+function Write404Error(res, message) {
     res.writeHead(404, {'Content-Type': 'text/plain'});
-    res.write('Error: file not found');
+    if(message.length === 0)
+    {
+        res.write('Error: file not found');
+    }
+    else
+    {
+        res.write(message);
+    }
+   
     res.end();
 }
 
