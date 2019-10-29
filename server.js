@@ -209,7 +209,9 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
         let response = template;
         var energyType = req.params.selected_energy_type;
         var energyCounts = {};
-        db.all("SELECT * FROM Consumption",  (err,data) => {
+		var energyTypes = ["Coal", "Natural Gas", "Nuclear", "Petroleum", "Renewable"];
+		var index = energyTypes.indexOf(energyType);       
+	   db.all("SELECT * FROM Consumption",  (err,data) => {
             if(err)
 			{
 				console.log("Error accessing the tables");
@@ -221,7 +223,11 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
                 {
                 //    energyCounts[i] = data[state_abbreviation]:{data[year] : data[energyType]};
                 }
-                WriteHtml(res, response);
+				response = response.replace ("Consumption Snapshot", energyTypes[index] + " Consumption Snapshot");
+				response=response.replace("noimage.jpg", energyType + ".jpg");
+				response=response.replace("description", "Image by Clker-Free-Vector-Images from Pixabay");
+				response=response.replace("description", "Image by Clker-Free-Vector-Images from Pixabay");
+				WriteHtml(res, response);
             }
         });
         
