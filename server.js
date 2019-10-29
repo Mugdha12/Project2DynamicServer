@@ -58,7 +58,7 @@ app.get('/', (req, res) => {
                     petroleum_count=petroleum_count+Number(data[i]["petroleum"]);
                     renewable_count=renewable_count+Number(data[i]["renewable"]);
                     total  = coal_count + naturalGas_count + nuclear_count + petroleum_count + renewable_count;
-                    table = table + " <tr> <td>" +  data[i]["state_abbreviation"] + "</td> <td>"+ coal_count + "</td> <td> " + naturalGas_count + " </td> <td>" + nuclear_count + "</td> <td> " + petroleum_count + "</td> <td> " + renewable_count + "</td> <td> " + total + "</td> </tr>";
+                    table = table + " <tr> <td>" +  data[i]["state_abbreviation"] + "</td> <td>"+ coal_count + "</td> <td> " + naturalGas_count + " </td> <td>" + nuclear_count + "</td> <td> " + petroleum_count + "</td> <td> " + renewable_count + "</td> </tr>";
 
                 }
                 response=response.replace("!!!CoalCount!!!",coal_count);
