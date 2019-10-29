@@ -10,6 +10,7 @@ var sqlite3 = require('sqlite3')
 var public_dir = path.join(__dirname, 'public');
 var template_dir = path.join(__dirname, 'templates');
 var db_filename = path.join(__dirname, 'db', 'usenergy.sqlite3');
+var images_dir = path.join(__dirname, 'images');
 
 var app = express();
 var port = 8000;
@@ -107,7 +108,7 @@ app.get('/year/:selected_year', (req, res) => {
                     response=response.replace("!!!prev!!!", hold + (Number(year)-1));
                     response = response.replace("National Snapshot", Number(year)-1);
                 }
-                console.log(response);
+              //  console.log(response);
                 response=response.replace("!!!CoalCount!!!",coal_count);
                 response=response.replace("!!!Naturalcount!!!", naturalGas_count);
                 response=response.replace("!!!Nuclearcount!!!", nuclear_count);
@@ -189,6 +190,8 @@ app.get('/state/:selected_state', (req, res) => {
                 response=response.replace("!!!petrol!!!", "[" + petroleum_counts.toString() + "]");
                 response=response.replace("!!!renew!!!", "[" + renewable_counts.toString() + "]");
                 response=response.replace("Data to be inserted here", table);
+				response=response.replace("noimage.jpg", state + ".jpg");
+				response=response.replace("description", "Image by Clker-Free-Vector-Images from Pixabay");
 				WriteHtml(res, response);
 
             }
@@ -216,7 +219,7 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
                 var i;
                 for (i=0; i<data.length;i++)
                 {
-                    energyCounts[i] = data[state_abbreviation]:{data[year] : data[energyType]};
+                //    energyCounts[i] = data[state_abbreviation]:{data[year] : data[energyType]};
                 }
                 WriteHtml(res, response);
             }
