@@ -104,7 +104,7 @@ app.get('/year/:selected_year', (req, res) => {
 		db.all("SELECT * FROM Consumption WHERE year = ?", [year], (err,data) => {
 			if(err)
 			{
-				console.log("Error accessing the tables");
+				console.log("Error: no data for year " + year);
 			}
 			else
 			{
@@ -177,11 +177,15 @@ app.get('/state/:selected_state', (req, res) => {
         db.all("SELECT * FROM Consumption WHERE state_abbreviation = ?", [state], (err,data) =>{
             if(err)
 			{
-				console.log("Error accessing the tables");
+				console.log("Error accessing database ");
 			}
 			else
 			{
                 var i;
+                if(data.length == 0)
+                {
+                    res.writeHead(404, ("Error: no data for state" + state));
+                }
                 for (i=0; i<data.length;i++)
                 {
                     coal_counts[i] = Number(data[i]["coal"]);
@@ -250,7 +254,7 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
         db.all("SELECT * FROM Consumption ORDER BY year",  (err,data) => {
             if(err)
 			{
-				console.log("Error accessing the tables");
+				console.log("Error: no data for energy type" + energyType);
             }
             else
             {
