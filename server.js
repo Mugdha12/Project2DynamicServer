@@ -21,11 +21,10 @@ var db = new sqlite3.Database(db_filename, sqlite3.OPEN_READONLY, (err) => {
     }
     else {
         console.log('Now connected to ' + db_filename);
-		TestSql();
     }
 });
 
-function TestSql()
+
 
 
 app.use(express.static(public_dir));
@@ -178,7 +177,7 @@ app.get('/state/:selected_state', (req, res) => {
 			}
 			else
 			{
-                if(data.length == 0)
+                if(data.length === 0)
                 {
                     Write404Error(res, "Error: no data for state  " + state);
 
@@ -254,15 +253,22 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
             year[x]=holdYear;
             holdYear++;
         }
-        db.all("SELECT * FROM Consumption ORDER BY year",  (err,data) => {
+        
+        db.all("SELECT * FROM Consumption ORDER BY year ",   (err,data) => {
             if(err)
 			{
 				console.log("Error: no data for energy type" + energyType);
             }
             else
             {
-                
-                var i;
+                if(data.length === 0)
+                {
+                    Write404Error(res, "Error: no data for energy Type " + energyType);
+
+                }
+                else
+                {
+                    var i;
                 for (i=0; i<data.length;i++)
                 {
                     var state = data[i]["state_abbreviation"];
@@ -283,6 +289,8 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
                 response = response.replace("!!!type!!!", "\"" + energyType+"\"");
                 response = response.replace("!!! objects !!!",  JSON.stringify(energyCounts));
                 WriteHtml(res, response);
+                }
+                
             }
         });
         //test
@@ -304,9 +312,17 @@ function ReadFile(filename) {
     });
 }
 
-function Write404Error(res) {
+function Write404Error(res, message) {
     res.writeHead(404, {'Content-Type': 'text/plain'});
-    res.write('Error: file not found');
+    if(message.length === 0)
+    {
+        res.write('Error: file not found');
+    }
+    else
+    {
+        res.write(message);
+    }
+    
     res.end();
 }
 
