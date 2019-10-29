@@ -22,23 +22,9 @@ var db = new sqlite3.Database(db_filename, sqlite3.OPEN_READONLY, (err) => {
     }
     else {
         console.log('Now connected to ' + db_filename);
-		TestSql();
     }
 });
 
-function TestSql()
-{
-	db.all("SELECT year,renewable,state_abbreviation FROM Consumption WHERE state_abbreviation = ? ",["MN"],  (err,data) => {
-		if(err)
-		{
-			console.log("Error accessing the tables");
-		}
-		else
-		{
-			//console.log(data);
-		}
-	});
-}
 
 app.use(express.static(public_dir));
 
