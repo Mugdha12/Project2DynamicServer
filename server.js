@@ -21,8 +21,12 @@ var db = new sqlite3.Database(db_filename, sqlite3.OPEN_READONLY, (err) => {
     }
     else {
         console.log('Now connected to ' + db_filename);
+		TestSql();
     }
 });
+
+function TestSql()
+
 
 app.use(express.static(public_dir));
 
@@ -257,13 +261,7 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
             }
             else
             {
-                if(data.length == 0)
-                {
-                    Write404Error(res, "Error: no data for energyType  " + energyType);
-
-                }
-                else
-                {
+                
                 var i;
                 for (i=0; i<data.length;i++)
                 {
@@ -285,9 +283,9 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
                 response = response.replace("!!!type!!!", "\"" + energyType+"\"");
                 response = response.replace("!!! objects !!!",  JSON.stringify(energyCounts));
                 WriteHtml(res, response);
-            }}
+            }
         });
-        
+        //test
     }).catch((err) => {
         Write404Error(res);
     });
