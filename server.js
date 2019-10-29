@@ -247,6 +247,8 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
         var energyCounts = {"AK": [], "AL": [], "AR":[], "AZ":[],"CA":[], "CO":[], "CT":[], "DC":[], "DE":[], "FL":[], "GA":[], "HI":[],"IA":[], "ID":[], "IL":[], "IN":[], "KS":[], "KY":[], "LA":[], "MA":[], "MD":[], "ME":[], "MI":[], "MN":[], "MO":[], "MS":[], "MT":[], "NC":[], "ND":[], "NE":[], "NH":[], "NJ":[], "NM":[], "NV":[], "NY":[], "OH":[], "OK":[], "OR":[], "PA":[], "RI":[], "SC":[], "SD":[], "TN":[], "TX":[], "UT":[], "VA":[], "VT":[], "WA":[],"WI":[], "WV":[], "WY":[]};
         var year = [];
         var table = "";
+		var energyTypes = ["coal", "natural_gas", "nuclear", "petroleum", "renewable"];
+		var index = energyTypes.indexOf(energyType); 
         holdYear = 1960;
         for (var x = 0; x <= 57; x++)
         {
@@ -261,7 +263,7 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
             }
             else
             {
-                if(data.length === 0)
+                if(energyTypes.indexOf(energyType) < 0)
                 {
                     Write404Error(res, "Error: no data for energy Type " + energyType);
 
@@ -270,28 +272,53 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
                 {
                     var i;
                 for (i=0; i<data.length;i++)
+			{
+            response = response.replace("Consumption Snapshot", energyType + " Consumption Snapshot");
+				var hold = "/energy-type/";
+                if(energyType === "renewable")
                 {
-                    var state = data[i]["state_abbreviation"];
-                    energyCounts[state].push(Number(data[i][energyType]));
+                    response=response.replace("XXX", "Coal");
+					response=response.replace("NextLink", hold + "renewable" );
                 }
-                var j;
-                for (i=0; i<year.length; i++)
+                else
                 {
-                    table = table + "<tr> <td>" +  year[i] + "</td>";
-                    for (var key in energyCounts)
-                    {
-                        table = table +  "<td>" + energyCounts[key][i] + "</td> ";
-                    }
-                    table = table + "</tr>";
+                    response = response.replace("NextLink", hold + energyTypes[index+1]);
+                    response = response.replace("XXX", energyTypes[index+1]);
                 }
                 
                 response=response.replace ("<!-- Data to be inserted here -->", table);
                 response = response.replace("!!!type!!!", "\"" + energyType+"\"");
                 response = response.replace("!!! objects !!!",  JSON.stringify(energyCounts));
-                WriteHtml(res, response);
+                if(energyType === "coal")
+                {
+                    response=response.replace("XX", "Renewable" );
+                    response=response.replace("prevLink", hold + "renewable" );
                 }
-                
+                else
+                {
+                    response=response.replace("PrevLink", hold + energyTypes[index-1]);
+                    response = response.replace("XX", energyTypes[index-1]);
+                }
+				
+				
+				
+				
+				if(energyType === "natural_gas")
+				{
+					response=response.replace("noimage.jpg", "NaturalGas.jpg");
+
+				}
+				else
+				{
+					response=response.replace("noimage.jpg", energyType + ".jpg");
+				}
+				
+				response=response.replace("description", "Image by Clker-Free-Vector-Images from Pixabay");
+				response=response.replace("description", "Image by Clker-Free-Vector-Images from Pixabay");
+				WriteHtml(res, response);
             }
+        }
+    }
         });
         //test
     }).catch((err) => {
