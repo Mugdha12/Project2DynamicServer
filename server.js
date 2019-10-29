@@ -97,13 +97,7 @@ app.get('/year/:selected_year', (req, res) => {
 			}
 			else
 			{
-                if(data.length == 0)
-                {
-                    Write404Error(res, "Error: no data for year  " + year);
-                }
-                else
-                {
-                    var i;
+                var i;
                 for (i=0; i<data.length;i++)
                 {
                     //console.log(data[i]["coal"]);
@@ -145,8 +139,6 @@ app.get('/year/:selected_year', (req, res) => {
                 response=response.replace("!!!RenewableCount!!!", renewable_count);
                 response=response.replace("Data to be inserted", table);
 				WriteHtml(res, response);
-                }
-                
 			}
 		});
     }).catch((err) => {
@@ -178,14 +170,7 @@ app.get('/state/:selected_state', (req, res) => {
 			}
 			else
 			{
-                if(data.length == 0)
-                {
-                    Write404Error(res, "Error: no data for state  " + state);
-
-                }
-                else
-                {
-                    var i;
+                var i;
                 for (i=0; i<data.length;i++)
                 {
                     coal_counts[i] = Number(data[i]["coal"]);
@@ -227,9 +212,6 @@ app.get('/state/:selected_state', (req, res) => {
                 response=response.replace("!!!renew!!!", "[" + renewable_counts.toString() + "]");
                 response=response.replace("Data to be inserted here", table);
 				WriteHtml(res, response);
-
-                }
-                
 
             }
 
