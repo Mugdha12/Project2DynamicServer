@@ -277,6 +277,7 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
     });
 });
 
+//NEW
 function ReadFile(filename) {
     return new Promise((resolve, reject) => {
         fs.readFile(filename, (err, data) => {
