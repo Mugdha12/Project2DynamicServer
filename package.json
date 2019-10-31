@@ -12,14 +12,14 @@
             "email": "raut5682@stthomas.edu"
         },
         {
-            "name": "",
-            "email": ""
+            "name": "Mugdha Danda",
+            "email": "dand9530@stthomas.edu"
         }
     ],
     "main": "server.js",
     "repository": {
         "type": "git",
-        "url": ""
+        "url": "https://github.com/Mugdha12/Project2DynamicServer"
     },
     "dependencies": {
         "express": "^4.17.1",

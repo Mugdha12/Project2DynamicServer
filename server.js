@@ -172,7 +172,7 @@ app.get('/state/:selected_state', (req, res) => {
                     "Kansas", "Kentucky", "Louisiana", "Massachusetts", "Maryland", "Maine", "Michigan", "Minnesota", "Missouri", "Mississippi", "Montana", "North Carolina","North Dakota", "Nebraska", "New Hampshire",
                      "New Jersey","New Mexico","Nevada", "Newyork", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Virginia", "Vermont", "Washington", "Wisconsin", "West Virginia", "Wyoming"];
         var index = states.indexOf(state);
-        db.all("SELECT * FROM Consumption WHERE state_abbreviation = ?", [state], (err,data) =>{
+        db.all("SELECT * FROM Consumption WHERE state_abbreviation = ? ORDER BY year ", [state], (err,data) =>{
             if(err)
 			{
 				console.log("Error:no data for state " + state);
@@ -227,8 +227,10 @@ app.get('/state/:selected_state', (req, res) => {
                 response=response.replace("!!!petrol!!!", "[" + petroleum_counts.toString() + "]");
                 response=response.replace("!!!renew!!!", "[" + renewable_counts.toString() + "]");
                 response=response.replace("Data to be inserted here", table);
-				response=response.replace("noimage.jpg", state + ".jpg");
-				response=response.replace("description", "Image by Clker-Free-Vector-Images from Pixabay");
+                response=response.replace("noimage.jpg", state + ".jpg");
+                response = response.replace("IMAGEALT", "Flag of " + state);
+                response=response.replace("description", "Image by Clker-Free-Vector-Images from Pixabay");
+                
 				WriteHtml(res, response);
 
                 }    
@@ -297,7 +299,7 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
                     if(energyType === "renewable")
                     {
                     response=response.replace("XXX", "Coal");
-                    response=response.replace("NextLink", hold + "renewable" );
+                    response=response.replace("NextLink", hold + "coal" );
                     }
                     else
                     {
@@ -315,7 +317,7 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
                     }
                     else
                     {
-                    response=response.replace("PrevLink", hold + energyTypes[index-1]);
+                    response=response.replace("prevLink", hold + energyTypes[index-1]);
                     response = response.replace("XX", energyTypes[index-1]);
                     }
 
@@ -331,7 +333,7 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
                     {
                     response=response.replace("noimage.jpg", energyType + ".jpg");
                     }
-
+                    response = response.replace("No Image", "Image of energy type: " + energyType );
                     response=response.replace("description", "Image by Clker-Free-Vector-Images from Pixabay");
                     response=response.replace("description", "Image by Clker-Free-Vector-Images from Pixabay");
                     WriteHtml(res, response);
