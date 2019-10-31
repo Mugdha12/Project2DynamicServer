@@ -105,7 +105,6 @@ app.get('/year/:selected_year', (req, res) => {
                     var i;
                 for (i=0; i<data.length;i++)
                 {
-                    //console.log(data[i]["coal"]);
                     coal_count = coal_count+Number(data[i]["coal"]);
                     naturalGas_count=naturalGas_count+Number(data[i]["natural_gas"]);
                     nuclear_count=nuclear_count+Number(data[i]["nuclear"]);
@@ -228,9 +227,15 @@ app.get('/state/:selected_state', (req, res) => {
                 response=response.replace("!!!renew!!!", "[" + renewable_counts.toString() + "]");
                 response=response.replace("Data to be inserted here", table);
                 response=response.replace("noimage.jpg", state + ".jpg");
-                response = response.replace("IMAGEALT", "Flag of " + state);
+                if(state !== "AL")
+                {
+                    response = response.replace("IMAGEALT", "Flag of " + fStates[index]);
+                }
+                else
+                {
+                    response = response.replace("IMAGEALT", "Outline of  " + fStates[index]);
+                }
                 response=response.replace("description", "Image by Clker-Free-Vector-Images from Pixabay");
-                
 				WriteHtml(res, response);
 
                 }    
@@ -320,9 +325,6 @@ app.get('/energy-type/:selected_energy_type', (req, res) => {
                     response=response.replace("prevLink", hold + energyTypes[index-1]);
                     response = response.replace("XX", energyTypes[index-1]);
                     }
-
-
-
 
                     if(energyType === "natural_gas")
                     {
