@@ -227,7 +227,7 @@ app.get('/state/:selected_state', (req, res) => {
                 response=response.replace("!!!renew!!!", "[" + renewable_counts.toString() + "]");
                 response=response.replace("Data to be inserted here", table);
                 response=response.replace("noimage.jpg", state + ".jpg");
-                if(state !== "AL")
+                if(state !== "AL" && state !== "CT" && state !== "NM" && state !== "WI" && state !== "MA")
                 {
                     response = response.replace("IMAGEALT", "Flag of " + fStates[index]);
                 }
