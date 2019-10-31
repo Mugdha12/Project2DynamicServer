@@ -117,7 +117,7 @@ app.get('/year/:selected_year', (req, res) => {
                 }
                 table = table + "</tr>";
                 response=response.replace("!!!year!!!", year);
-                response = response.replace("National Snapshot", year);
+                response = response.replace("National Snapshot", year + " National Snapshot");
                 var hold = "/Year/";
                 if(year == 2017)
                 {
@@ -126,7 +126,7 @@ app.get('/year/:selected_year', (req, res) => {
                 else
                 {
                     response=response.replace("!!!next!!!", hold + (Number(year)+1));
-                    response = response.replace("National Snapshot", Number(year)+1);
+                    response = response.replace("National Snapshot", Number(year)+1 + " National Snapshot");
                 }
                 if(year == 1960)
                 {
@@ -135,7 +135,7 @@ app.get('/year/:selected_year', (req, res) => {
                 else
                 {
                     response=response.replace("!!!prev!!!", hold + (Number(year)-1));
-                    response = response.replace("National Snapshot", Number(year)-1);
+                    response = response.replace("National Snapshot", Number(year)-1 + " National Snapshot");
                 }
                 response=response.replace("!!!CoalCount!!!",coal_count);
                 response=response.replace("!!!Naturalcount!!!", naturalGas_count);
